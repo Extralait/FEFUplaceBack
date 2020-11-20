@@ -20,3 +20,9 @@ class Event(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Inventory(models.Model):
+    name = models.CharField('Название инвентаря', max_length=64)
+    description = models.TextField('Описание предмета инвентаря')
+    availability = models.BooleanField('доступность')
