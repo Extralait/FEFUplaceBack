@@ -3,7 +3,19 @@ from rest_framework import serializers
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from django.utils.translation import gettext_lazy as _
 
-from .models import Event, Organization, Inventory
+from .models import Event, Organization, Inventory, MembersInOrganization, User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('pk', 'full_name', 'email')
+
+
+class MembersInOrganizationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MembersInOrganization
+        fields = '__all__'
 
 
 class EventSerializer(serializers.ModelSerializer):
