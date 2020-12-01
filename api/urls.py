@@ -10,5 +10,5 @@ router.register(r'inventory', InventoryViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('token-auth/', CustomAuthToken.as_view(), name='api_token_auth'),
+    path('token/', CustomAuthToken.as_view(), name='token'),
 ]

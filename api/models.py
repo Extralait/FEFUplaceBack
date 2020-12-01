@@ -23,7 +23,6 @@ class UserManager(BaseUserManager):
     def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('role', 'manager')
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
@@ -35,15 +34,8 @@ class UserManager(BaseUserManager):
 
 # Custom User Class
 class User(AbstractUser):
-    class RoleChoices(models.TextChoices):
-        CLIENT = 'client', 'Клиент'
-        MANAGER = 'manager', 'Менеджер'
-
     username = None
     full_name = models.CharField('ФИО', max_length=100)
-    role = models.CharField('Роль пользователя', max_length=10, choices=RoleChoices.choices,
-                            default=RoleChoices.CLIENT)
-    mailing_address = models.CharField('Адрес доставки', max_length=100)
     email = models.EmailField('Email', unique=True)
 
     USERNAME_FIELD = 'email'
@@ -91,6 +83,7 @@ class Event(models.Model):
     name = models.CharField('Название мероприятия', max_length=64)
     organization = models.ManyToManyField(Organization, verbose_name="Организатор мероприятия")
     date = models.DateField('Дата проведения')
+    organizators = models.ManyToManyField(User, verbose_name='Организаторы мероприятия', through='EventOrganizators')
 
     class Meta:
         verbose_name = 'Мероприятие'
@@ -98,6 +91,12 @@ class Event(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class EventOrganizators(models.Model):
+    user = models.ForeignKey(User, verbose_name='Участник', on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, verbose_name='Мероприятие', on_delete=models.CASCADE)
+    role = models.CharField('Роль участника', max_length=64, blank=True, null=True)
 
 
 class Inventory(models.Model):
