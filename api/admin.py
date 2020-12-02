@@ -7,9 +7,9 @@ admin.site.register(Organization)
 admin.site.register(Inventory)
 
 
+# Custom User admin with no username field
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
-    """Define admin model for custom User model with no email field."""
 
     fieldsets = (
         (None, {'fields': ('email', 'password')}),

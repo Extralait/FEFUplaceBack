@@ -68,6 +68,7 @@ class Organization(models.Model):
         return self.name
 
 
+# Intermediate table for m2m field on organization model
 class MembersInOrganization(models.Model):
     class RoleChoices(models.TextChoices):
         MEMBER = 'member', 'Член организации'
@@ -93,6 +94,7 @@ class Event(models.Model):
         return self.name
 
 
+# Intermediate table on m2m field in Event model
 class EventOrganizators(models.Model):
     user = models.ForeignKey(User, verbose_name='Участник', on_delete=models.CASCADE)
     event = models.ForeignKey(Event, verbose_name='Мероприятие', on_delete=models.CASCADE)

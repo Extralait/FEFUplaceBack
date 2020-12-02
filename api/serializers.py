@@ -36,6 +36,7 @@ class InventorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+# Custom Token Serializer for logging in with email instead of username
 class CustomAuthTokenSerializer(AuthTokenSerializer):
     username = None
     email = serializers.CharField(
