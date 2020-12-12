@@ -81,10 +81,19 @@ class MembersInOrganization(models.Model):
 
 
 class Event(models.Model):
+    class LevelChoices(models.TextChoices):
+        INTERNATIONAL = 'international', 'Международный'
+        COUNTRY = 'country', 'Всероссийский'
+        REGIONAL = 'regional', 'Региональный'
+        UNIVERSITY = 'university', 'Университетский'
+
     name = models.CharField('Название мероприятия', max_length=64)
     organization = models.ManyToManyField(Organization, verbose_name="Организатор мероприятия")
     date = models.DateField('Дата проведения')
     organizators = models.ManyToManyField(User, verbose_name='Организаторы мероприятия', through='EventOrganizators')
+    date_end = models.DateField('Дата окончания')
+    level = models.CharField('Уровень мероприятия', max_length=64, choices=LevelChoices.choices,
+                             default=LevelChoices.UNIVERSITY)
 
     class Meta:
         verbose_name = 'Мероприятие'
