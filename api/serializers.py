@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from django.utils.translation import gettext_lazy as _
 
-from .models import Event, Organization, Inventory, MembersInOrganization, User
+from .models import Event, Organization, Inventory, MembersInOrganization, User, EventOrganizators
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -15,25 +15,33 @@ class UserSerializer(serializers.ModelSerializer):
 class MembersInOrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = MembersInOrganization
-        fields = '__all__'
+        fields = ('user', 'organization', 'role')
 
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = '__all__'
+        # m2m with trough: organizators
+        fields = ('name', 'organization', 'date', 'organizators', 'date_end', 'level')
+
+
+class EventOrganizatorsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EventOrganizators
+        fields = ('user', 'role')
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
-        fields = '__all__'
+        # m2m fields with trough: members
+        fields = ('name', 'description', 'mission', 'motivation', 'work_trajectory', 'goal', 'members')
 
 
 class InventorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Inventory
-        fields = '__all__'
+        fields = ('name', 'description', 'availability')
 
 
 # Custom Token Serializer for logging in with email instead of username
