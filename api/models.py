@@ -105,9 +105,17 @@ class Event(models.Model):
 
 # Intermediate table on m2m field in Event model
 class EventOrganizators(models.Model):
+    class RoleChoices(models.TextChoices):
+        LEADER = 'leader', 'Руководитель'
+        MANAGER = 'manager', 'Организатор'
+        EXECUTOR = 'executor', 'Исполнитель'
+        VOLONTEER = 'volonteer', 'волонтер'
+
     user = models.ForeignKey(User, verbose_name='Участник', on_delete=models.CASCADE)
     event = models.ForeignKey(Event, verbose_name='Мероприятие', on_delete=models.CASCADE)
-    role = models.CharField('Роль участника', max_length=64, blank=True, null=True)
+    role = models.CharField('Роль участника', max_length=64, blank=True, null=True, choices=RoleChoices.choices,
+                            default=RoleChoices.VOLONTEER)
+    grant = models.PositiveSmallIntegerField('стипендия')
 
 
 class Inventory(models.Model):
