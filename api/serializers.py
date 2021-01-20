@@ -25,7 +25,7 @@ class EventOrganizatorsSerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(serializers.ModelSerializer):
-    # organizators = EventOrganizatorsSerializer()
+    organizators = EventOrganizatorsSerializer()
 
     class Meta:
         model = Event
@@ -34,7 +34,7 @@ class EventSerializer(serializers.ModelSerializer):
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
-    # members = MembersInOrganizationSerializer()
+    members = MembersInOrganizationSerializer()
 
     class Meta:
         model = Organization
