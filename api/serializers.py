@@ -25,16 +25,16 @@ class EventOrganizatorsSerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(serializers.ModelSerializer):
-    organizators = EventOrganizatorsSerializer()
+    organizators = EventOrganizatorsSerializer(many=True)
 
     class Meta:
         model = Event
         # m2m with trough: organizators
-        fields = ('name', 'organization', 'date', 'organizators', 'date_end', 'level')
+        fields = ('name', 'organization', 'date', 'organizators', 'date_end', 'level', 'organizators')
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
-    members = MembersInOrganizationSerializer()
+    members = MembersInOrganizationSerializer(many=True)
 
     class Meta:
         model = Organization

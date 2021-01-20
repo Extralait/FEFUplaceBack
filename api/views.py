@@ -2,11 +2,17 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from .models import Event, Organization, Inventory
+from .models import Event, Organization, Inventory, User
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.schemas import coreapi as coreapi_schema
 from rest_framework.schemas import ManualSchema
-from .serializers import EventSerializer, OrganizationSerializer, InventorySerializer, CustomAuthTokenSerializer
+from .serializers import EventSerializer, OrganizationSerializer, InventorySerializer, CustomAuthTokenSerializer, \
+    UserSerializer
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User
+    serializer_class = UserSerializer
 
 
 class EventViewSet(viewsets.ModelViewSet):
