@@ -9,7 +9,7 @@ from .models import Event, Organization, Inventory, MembersInOrganization, User,
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('pk', 'full_name', 'email')
+        fields = ('id', 'full_name', 'email')
 
 
 class MembersInOrganizationSerializer(serializers.ModelSerializer):
@@ -19,6 +19,8 @@ class MembersInOrganizationSerializer(serializers.ModelSerializer):
 
 
 class EventOrganizatorsSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = EventOrganizators
         fields = ('user', 'role')
@@ -30,7 +32,8 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         # m2m with trough: organizators
-        fields = ('name', 'organization', 'date', 'organizators', 'date_end', 'level', 'organizators')
+        fields = ('name', 'organization', 'date', 'time', 'auditorium', 'organizators', 'date_end', 'level',
+                  'organizators')
 
 
 class OrganizationSerializer(serializers.ModelSerializer):

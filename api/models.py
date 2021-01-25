@@ -90,6 +90,8 @@ class Event(models.Model):
     name = models.CharField('Название мероприятия', max_length=64)
     organization = models.ManyToManyField(Organization, verbose_name="Организатор мероприятия")
     date = models.DateField('Дата проведения')
+    time = models.TimeField('Время проведения')
+    auditorium = models.CharField('Место проведения/Аудитория', max_length=64)
     organizators = models.ManyToManyField(User, verbose_name='Организаторы мероприятия', through='EventOrganizators')
     date_end = models.DateField('Дата окончания')
     level = models.CharField('Уровень мероприятия', max_length=64, choices=LevelChoices.choices,

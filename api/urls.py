@@ -1,9 +1,10 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from .views import EventViewSet, OrganizationViewSet, InventoryViewSet, CustomAuthToken
+from .views import EventViewSet, OrganizationViewSet, InventoryViewSet, CustomAuthToken, UserViewSet
 
 router = routers.DefaultRouter()
+router.register(r'users', UserViewSet)
 router.register(r'events', EventViewSet)
 router.register(r'organizations', OrganizationViewSet)
 router.register(r'inventory', InventoryViewSet)

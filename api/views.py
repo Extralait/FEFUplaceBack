@@ -11,7 +11,7 @@ from .serializers import EventSerializer, OrganizationSerializer, InventorySeria
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User
+    queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
