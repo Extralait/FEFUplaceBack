@@ -15,25 +15,29 @@ class UserSerializer(serializers.ModelSerializer):
 class MembersInOrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = MembersInOrganization
-        fields = ('user', 'organization', 'role')
+        fields = ('user', 'role')
 
 
 class EventOrganizatorsSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-
     class Meta:
         model = EventOrganizators
         fields = ('user', 'role')
 
 
 class EventSerializer(serializers.ModelSerializer):
-    organizators = EventOrganizatorsSerializer(many=True)
+    organizators = EventOrganizatorsSerializer(many=True, required=False)
 
     class Meta:
         model = Event
         # m2m with trough: organizators
         fields = ('name', 'organization', 'date', 'time', 'auditorium', 'organizators', 'date_end', 'level',
                   'organizators')
+
+    def create(self, validated_data):
+        organizators = validated_data.pop('organizators')
+        event = Event.objects.create(**validated_data)
+        EventOrganizators.objects.create(event=event, **organizators)
+        return event
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -43,6 +47,12 @@ class OrganizationSerializer(serializers.ModelSerializer):
         model = Organization
         # m2m fields with trough: members
         fields = ('name', 'description', 'mission', 'motivation', 'work_trajectory', 'goal', 'members')
+
+    def create(self, validated_data):
+        members = validated_data.pop('members')
+        organization = Organization.objects.create(**validated_data)
+        MembersInOrganization.objects.create(organization=organization, **members)
+        return organization
 
 
 class InventorySerializer(serializers.ModelSerializer):

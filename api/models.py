@@ -117,7 +117,7 @@ class EventOrganizators(models.Model):
     event = models.ForeignKey(Event, verbose_name='Мероприятие', on_delete=models.CASCADE)
     role = models.CharField('Роль участника', max_length=64, blank=True, null=True, choices=RoleChoices.choices,
                             default=RoleChoices.VOLONTEER)
-    grant = models.PositiveSmallIntegerField('стипендия')
+    grant = models.PositiveSmallIntegerField('стипендия', blank=True, default=0)
 
 
 class Inventory(models.Model):
