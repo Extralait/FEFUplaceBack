@@ -9,7 +9,7 @@ from .models import Event, Organization, Inventory, MembersInOrganization, User,
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'full_name', 'email')
+        fields = ('id', 'full_name', 'email', 'image')
 
 
 class MembersInOrganizationSerializer(serializers.ModelSerializer):
@@ -19,9 +19,12 @@ class MembersInOrganizationSerializer(serializers.ModelSerializer):
 
 
 class EventOrganizatorsSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    grant = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = EventOrganizators
-        fields = ('user', 'role')
+        fields = ('user', 'role', 'grant')
 
 
 class EventSerializer(serializers.ModelSerializer):

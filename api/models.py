@@ -37,6 +37,7 @@ class User(AbstractUser):
     username = None
     full_name = models.CharField('ФИО', max_length=100)
     email = models.EmailField('Email', unique=True)
+    image = models.ImageField('Аватар пользователя', blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -53,6 +54,7 @@ class User(AbstractUser):
 
 class Organization(models.Model):
     name = models.CharField('Название организации', max_length=64)
+    image = models.ImageField('Аватар организации', blank=True)
     description = models.TextField('Описание')
     mission = models.TextField('Миссия')
     motivation = models.TextField('Мотивировка')
@@ -74,8 +76,8 @@ class MembersInOrganization(models.Model):
         MEMBER = 'member', 'Член организации'
         LEADER = 'leader', 'Глава/исполняющий обязанности организации'
 
-    user = models.ForeignKey(User, models.CASCADE, verbose_name='пользователь')
-    organization = models.ForeignKey(Organization, models.CASCADE, verbose_name='организация')
+    user = models.ForeignKey(User, models.PROTECT, verbose_name='пользователь')
+    organization = models.ForeignKey(Organization, models.PROTECT, verbose_name='организация')
     role = models.CharField('роль в организации', max_length=10, choices=RoleChoices.choices,
                             default=RoleChoices.MEMBER)
 
@@ -88,6 +90,7 @@ class Event(models.Model):
         UNIVERSITY = 'university', 'Университетский'
 
     name = models.CharField('Название мероприятия', max_length=64)
+    image = models.ImageField('Картинка мероприятия', blank=True)
     organization = models.ManyToManyField(Organization, verbose_name="Организатор мероприятия")
     date = models.DateField('Дата проведения')
     time = models.TimeField('Время проведения')
@@ -113,8 +116,8 @@ class EventOrganizators(models.Model):
         EXECUTOR = 'executor', 'Исполнитель'
         VOLONTEER = 'volonteer', 'волонтер'
 
-    user = models.ForeignKey(User, verbose_name='Участник', on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, verbose_name='Мероприятие', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name='Участник', on_delete=models.PROTECT)
+    event = models.ForeignKey(Event, verbose_name='Мероприятие', on_delete=models.PROTECT)
     role = models.CharField('Роль участника', max_length=64, blank=True, null=True, choices=RoleChoices.choices,
                             default=RoleChoices.VOLONTEER)
     grant = models.PositiveSmallIntegerField('стипендия', blank=True, default=0)
