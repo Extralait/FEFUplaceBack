@@ -2,6 +2,8 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from api.validators import phone_regex
+
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -35,9 +37,19 @@ class UserManager(BaseUserManager):
 # Custom User Class
 class User(AbstractUser):
     username = None
-    full_name = models.CharField('ФИО', max_length=100)
     email = models.EmailField('Email', unique=True)
     image = models.ImageField('Аватар пользователя', blank=True)
+    name = models.CharField('Имя', max_length=256, default='')
+    surname = models.CharField('Фамилия', max_length=256, default='')
+    fathers_name = models.CharField('Отчество', max_length=256, default='')
+    education_level = models.CharField('Уровень образования', max_length=256, default='bacalavr')
+    school = models.CharField('Школа', max_length=256, default='')
+    faculty = models.CharField('факультет', max_length=256, default='')
+    education_year = models.CharField('Год обучения', max_length=256, default='')
+    phone = models.CharField('мобильный телефон', max_length=256, validators=[phone_regex])
+    social_1 = models.URLField('ссылка на соц.сеть 1', default='')
+    social_2 = models.URLField('ссылка на соц.сеть 2', default='')
+    social_3 = models.URLField('ссылка на соц.сеть 3', default='')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -49,18 +61,22 @@ class User(AbstractUser):
         verbose_name_plural = 'Пользователи'
 
     def __str__(self):
-        return self.full_name
+        return self.email
 
 
 class Organization(models.Model):
     name = models.CharField('Название организации', max_length=64)
     image = models.ImageField('Аватар организации', blank=True)
-    description = models.TextField('Описание')
-    mission = models.TextField('Миссия')
-    motivation = models.TextField('Мотивировка')
-    work_trajectory = models.TextField('Траектория работы')
-    goal = models.TextField('Цель')
+    description = models.TextField('Описание', default='')
+    mission = models.TextField('Миссия', default='')
+    motivation = models.TextField('Мотивировка', default='')
+    work_trajectory = models.TextField('Траектория работы', default='')
+    goal = models.TextField('Цель', default='')
     members = models.ManyToManyField(User, verbose_name='участники организации', through='MembersInOrganization')
+    social_network_1 = models.URLField('ссылка на соцсеть 1', blank=True)
+    social_network_2 = models.URLField('ссылка на соцсеть 2', blank=True)
+    phone = models.CharField(max_length=256, validators=[phone_regex])
+    email = models.EmailField('email')
 
     class Meta:
         verbose_name = 'Организация'
@@ -76,7 +92,7 @@ class MembersInOrganization(models.Model):
         MEMBER = 'member', 'Член организации'
         LEADER = 'leader', 'Глава/исполняющий обязанности организации'
 
-    user = models.ForeignKey(User, models.PROTECT, verbose_name='пользователь')
+    user = models.ForeignKey(User, models.CASCADE, verbose_name='пользователь')
     organization = models.ForeignKey(Organization, models.PROTECT, verbose_name='организация')
     role = models.CharField('роль в организации', max_length=10, choices=RoleChoices.choices,
                             default=RoleChoices.MEMBER)
@@ -99,6 +115,7 @@ class Event(models.Model):
     date_end = models.DateField('Дата окончания')
     level = models.CharField('Уровень мероприятия', max_length=64, choices=LevelChoices.choices,
                              default=LevelChoices.UNIVERSITY)
+    guests = models.ManyToManyField(User, verbose_name='Участники мероприятия', related_name='guests')
 
     class Meta:
         verbose_name = 'Мероприятие'
@@ -120,7 +137,7 @@ class EventOrganizators(models.Model):
     event = models.ForeignKey(Event, verbose_name='Мероприятие', on_delete=models.PROTECT)
     role = models.CharField('Роль участника', max_length=64, blank=True, null=True, choices=RoleChoices.choices,
                             default=RoleChoices.VOLONTEER)
-    grant = models.PositiveSmallIntegerField('стипендия', blank=True, default=0)
+    grant = models.DecimalField('стипендия', blank=True, default='0', max_digits=10, decimal_places=2)
 
 
 class Inventory(models.Model):

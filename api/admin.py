@@ -31,7 +31,10 @@ admin.site.register(Inventory)
 class UserAdmin(DjangoUserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('full_name',)}),
+        ('Personal info', {'fields': ('name', 'surname', 'fathers_name')}),
+        ('Permissions', {
+            'fields': ('is_active', 'is_staff', 'is_superuser'),
+        }),
     )
     add_fieldsets = (
         (None, {
@@ -39,6 +42,6 @@ class UserAdmin(DjangoUserAdmin):
             'fields': ('email', 'password1', 'password2'),
         }),
     )
-    list_display = ('email', 'full_name')
-    search_fields = ('email', 'full_name',)
+    list_display = ('email', 'name', 'surname', 'fathers_name')
+    search_fields = ('email', 'name',)
     ordering = ('email',)

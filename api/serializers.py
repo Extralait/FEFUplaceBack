@@ -9,10 +9,15 @@ from .models import Event, Organization, Inventory, MembersInOrganization, User,
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'full_name', 'email', 'image')
+        fields = ('id', 'email', 'image', 'name',
+                  'surname', 'fathers_name', 'education_level',
+                  'phone', 'social_1', 'social_2',
+                  'social_3')
 
 
 class MembersInOrganizationSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = MembersInOrganization
         fields = ('user', 'role')
@@ -22,9 +27,30 @@ class EventOrganizatorsSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     grant = serializers.IntegerField(read_only=True)
 
+    role_multipliers = {
+        'leader': '2.0',
+        'manager': '1.5',
+        'executor': '1.25',
+        'volonteer': '1.0',
+    }
+    level_multipliers = {
+        'international': '2.0',
+        'country': '1.5',
+        'regional': '1.25',
+        'university': '1.0',
+    }
+
     class Meta:
         model = EventOrganizators
         fields = ('user', 'role', 'grant')
+
+    def create(self, validated_data):
+        obj = self.get_object()
+        role = validated_data['role']
+        level = obj.event.level
+        validated_data['grant'] = 1000 * self.role_multipliers[role] \
+                                  * self.level_multipliers[level]
+        return super(EventOrganizatorsSerializer, self).create(validated_data)
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -34,7 +60,7 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         # m2m with trough: organizators
         fields = ('name', 'organization', 'date', 'time', 'auditorium', 'organizators', 'date_end', 'level',
-                  'organizators')
+                  'organizators', 'guests')
 
     def create(self, validated_data):
         organizators = validated_data.pop('organizators')
@@ -44,12 +70,15 @@ class EventSerializer(serializers.ModelSerializer):
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
-    members = MembersInOrganizationSerializer(many=True)
+    members = MembersInOrganizationSerializer(many=True, required=False)
 
     class Meta:
         model = Organization
         # m2m fields with trough: members
-        fields = ('name', 'description', 'mission', 'motivation', 'work_trajectory', 'goal', 'members')
+        fields = ('name', 'description', 'mission',
+                  'motivation', 'work_trajectory', 'goal',
+                  'members', 'social_network_1', 'social_network_2',
+                  'phone', 'email')
 
     def create(self, validated_data):
         members = validated_data.pop('members')
