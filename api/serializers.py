@@ -39,6 +39,12 @@ class EventOrganizatorsSerializer(serializers.ModelSerializer):
         'regional': '1.2',
         'university': '1.8',
     }
+    duration_multipliers = {
+        '1-3': '1.1',
+        '4-21': '1.4',
+        '22-70': '1.7',
+        '<71': '2.0'
+    }
 
     class Meta:
         model = EventOrganizators
@@ -59,7 +65,7 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         # m2m with trough: organizators
-        fields = ('name', 'organization', 'date', 'time', 'auditorium', 'organizators', 'date_end', 'level',
+        fields = ('id', 'name', 'organization', 'date', 'time', 'auditorium', 'organizators', 'date_end', 'level',
                   'organizators', 'guests')
 
     def create(self, validated_data):
@@ -82,7 +88,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         # m2m fields with trough: members
-        fields = ('name', 'description', 'mission',
+        fields = ('id', 'name', 'description', 'mission',
                   'motivation', 'work_trajectory', 'goal',
                   'members', 'social_network_1', 'social_network_2',
                   'phone', 'email')
