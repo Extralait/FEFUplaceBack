@@ -2,7 +2,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from api.validators import phone_regex
+from api.validators import phone_regex, image_validator
 
 
 class UserManager(BaseUserManager):
@@ -38,7 +38,7 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     username = None
     email = models.EmailField('Email', unique=True)
-    image = models.ImageField('Аватар пользователя', blank=True)
+    image = models.ImageField('Аватар пользователя', blank=True, validators=[image_validator])
     name = models.CharField('Имя', max_length=256, default='', blank=True)
     surname = models.CharField('Фамилия', max_length=256, default='', blank=True)
     fathers_name = models.CharField('Отчество', max_length=256, default='', blank=True)
@@ -66,13 +66,14 @@ class User(AbstractUser):
 
 class Organization(models.Model):
     name = models.CharField('Название организации', max_length=64)
-    image = models.ImageField('Аватар организации', blank=True)
+    image = models.ImageField('Аватар организации', blank=True, validators=[image_validator])
     description = models.TextField('Описание', default='', blank=True)
     mission = models.TextField('Миссия', default='', blank=True)
     motivation = models.TextField('Мотивировка', default='', blank=True)
     work_trajectory = models.TextField('Траектория работы', default='', blank=True)
     goal = models.TextField('Цель', default='', blank=True)
-    members = models.ManyToManyField(User, verbose_name='участники организации', through='MembersInOrganization', blank=True)
+    members = models.ManyToManyField(User, verbose_name='участники организации', through='MembersInOrganization',
+                                     blank=True)
     social_network_1 = models.URLField('ссылка на соцсеть 1', blank=True)
     social_network_2 = models.URLField('ссылка на соцсеть 2', blank=True)
     phone = models.CharField(max_length=256, validators=[phone_regex], blank=True)
@@ -106,14 +107,14 @@ class Event(models.Model):
         UNIVERSITY = 'university', 'Университетский'
 
     name = models.CharField('Название мероприятия', max_length=64)
-    image = models.ImageField('Картинка мероприятия', blank=True)
+    image = models.ImageField('Картинка мероприятия', blank=True, validators=[image_validator])
     organization = models.ManyToManyField(Organization, verbose_name="Организатор мероприятия")
     date = models.DateField('Дата проведения')
     time = models.TimeField('Время проведения')
     auditorium = models.CharField('Место проведения/Аудитория', max_length=64)
     organizators = models.ManyToManyField(User, verbose_name='Организаторы мероприятия', through='EventOrganizators',
                                           blank=True
-    )
+                                          )
     date_end = models.DateField('Дата окончания')
     level = models.CharField('Уровень мероприятия', max_length=64, choices=LevelChoices.choices,
                              default=LevelChoices.UNIVERSITY)

@@ -1,12 +1,11 @@
 import base64
 import json
-import warnings
 from io import BytesIO
 from pathlib import PurePosixPath
 
-from PIL import UnidentifiedImageError
-from PIL.Image import Image
+from PIL import UnidentifiedImageError, Image
 from django.core.validators import RegexValidator
+from django.utils.deconstruct import deconstructible
 from rest_framework.exceptions import ValidationError
 
 phone_regex = RegexValidator(
@@ -15,6 +14,7 @@ phone_regex = RegexValidator(
 )
 
 
+@deconstructible
 class ImageValidator:
     """
     Base Image Validation class
@@ -42,13 +42,14 @@ class ImageValidator:
     def __call__(self, value):
         if isinstance(value, (str, bytes)):
             value = json.loads(value)
-        file_extension = PurePosixPath(value['name']).suffix
+        file_extension = PurePosixPath(value.name).suffix
         if value and file_extension[1:] not in self.extensions:
             raise ValidationError(f'unsupported image file format,'
-                                              f' expected ({",".join(self.extensions)}),'
-                                              f' got {file_extension[1:]}')
+                                  f' expected ({",".join(self.extensions)}),'
+                                  f' got {file_extension[1:]}')
 
 
+@deconstructible
 class ImageOpenValidator(ImageValidator):
     """
     Image validator that checks if image can be unpacked from b64 to PIL Image obj
@@ -62,11 +63,12 @@ class ImageOpenValidator(ImageValidator):
             value = json.loads(value)
         super().__call__(value)
         try:
-            self.img = Image.open(BytesIO(base64.b64decode(value['content'])))
+            self.img = Image.open(value)
         except UnidentifiedImageError:
             raise ValidationError(self.error_msg)
 
 
+@deconstructible
 class ImageBaseSizeValidator(ImageOpenValidator):
     """
     If you want you want to use this class for validating image width/height, you should rewrite
@@ -89,9 +91,10 @@ class ImageBaseSizeValidator(ImageOpenValidator):
             value = getattr(self.img, orientation)
             if not (min_value <= value <= max_value):
                 raise ValidationError(f'Invalid image {orientation}. Expected from {min_value}'
-                                                  f' to {max_value}, got {value}')
+                                      f' to {max_value}, got {value}')
 
 
+@deconstructible
 class ImageHeightValidator(ImageBaseSizeValidator):
     """
     Wrapper for _ImageBaseSizeValidator that validates only height
@@ -102,6 +105,7 @@ class ImageHeightValidator(ImageBaseSizeValidator):
     orientation = ('height',)
 
 
+@deconstructible
 class ImageWidthValidator(ImageBaseSizeValidator):
     """
     Wrapper for _ImageBaseSizeValidator that validates only height
@@ -112,6 +116,7 @@ class ImageWidthValidator(ImageBaseSizeValidator):
     orientation = ('width',)
 
 
+@deconstructible
 class ImageResolutionValidator(ImageBaseSizeValidator):
     """
     Wrapper for _ImageBaseSizeValidator that validates both height and width
@@ -122,3 +127,6 @@ class ImageResolutionValidator(ImageBaseSizeValidator):
     :param max_width: maximal width of an image being validated
     """
     orientation = ('height', 'width')
+
+
+image_validator = ImageResolutionValidator(extensions=['jpg', 'png'], max_height=1600, max_width=1600)

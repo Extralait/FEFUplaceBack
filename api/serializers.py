@@ -1,3 +1,4 @@
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework.authtoken.serializers import AuthTokenSerializer
@@ -50,12 +51,22 @@ class EventOrganizatorsSerializer(serializers.ModelSerializer):
         model = EventOrganizators
         fields = ('user', 'role', 'grant')
 
+    def count_duration(self, date_start, date_end):
+        if relativedelta(date_end, date_start).days in range(1, 3):
+            return self.duration_multipliers['1-3']
+        elif relativedelta(date_end, date_start).days in range(4, 21):
+            return self.duration_multipliers['4-21']
+        elif relativedelta(date_end, date_start).days in range(22, 70):
+            return self.duration_multipliers['22-70']
+        elif relativedelta(date_end, date_start).days >= 71:
+            return self.duration_multipliers['<71']
+
     def create(self, validated_data):
         obj = self.get_object()
         role = validated_data['role']
         level = obj.event.level
         validated_data['grant'] = self.role_multipliers[role] \
-                                  * self.level_multipliers[level]
+                                  * self.level_multipliers[level] * self.count_duration()
         return super(EventOrganizatorsSerializer, self).create(validated_data)
 
 
@@ -65,7 +76,7 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         # m2m with trough: organizators
-        fields = ('id', 'name', 'organization', 'date', 'time', 'auditorium', 'organizators', 'date_end', 'level',
+        fields = ('id', 'image', 'name', 'organization', 'date', 'time', 'auditorium', 'organizators', 'date_end', 'level',
                   'organizators', 'guests')
 
     def create(self, validated_data):
@@ -88,7 +99,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         # m2m fields with trough: members
-        fields = ('id', 'name', 'description', 'mission',
+        fields = ('id', 'image', 'name', 'description', 'mission',
                   'motivation', 'work_trajectory', 'goal',
                   'members', 'social_network_1', 'social_network_2',
                   'phone', 'email')
