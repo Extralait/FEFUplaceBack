@@ -48,7 +48,7 @@ class EventOrganizatorsSerializer(serializers.ModelSerializer):
         obj = self.get_object()
         role = validated_data['role']
         level = obj.event.level
-        validated_data['grant'] = 1000 * self.role_multipliers[role] \
+        validated_data['grant'] = self.role_multipliers[role] \
                                   * self.level_multipliers[level]
         return super(EventOrganizatorsSerializer, self).create(validated_data)
 
@@ -63,9 +63,16 @@ class EventSerializer(serializers.ModelSerializer):
                   'organizators', 'guests')
 
     def create(self, validated_data):
-        organizators = validated_data.pop('organizators')
+        organization = validated_data.pop('organization', None)
+        organizators = validated_data.pop('organizators', None)
+        guests = validated_data.pop('guests', None)
         event = Event.objects.create(**validated_data)
-        EventOrganizators.objects.create(event=event, **organizators)
+        if organization:
+            event.organization.set(organization)
+        if guests:
+            event.guests.set(guests)
+        if organizators:
+            EventOrganizators.objects.create(event=event, **organizators)
         return event
 
 
@@ -81,9 +88,10 @@ class OrganizationSerializer(serializers.ModelSerializer):
                   'phone', 'email')
 
     def create(self, validated_data):
-        members = validated_data.pop('members')
+        members = validated_data.pop('members', None)
         organization = Organization.objects.create(**validated_data)
-        MembersInOrganization.objects.create(organization=organization, **members)
+        if members:
+            MembersInOrganization.objects.create(organization=organization, **members)
         return organization
 
 

@@ -39,17 +39,17 @@ class User(AbstractUser):
     username = None
     email = models.EmailField('Email', unique=True)
     image = models.ImageField('Аватар пользователя', blank=True)
-    name = models.CharField('Имя', max_length=256, default='')
-    surname = models.CharField('Фамилия', max_length=256, default='')
-    fathers_name = models.CharField('Отчество', max_length=256, default='')
-    education_level = models.CharField('Уровень образования', max_length=256, default='bacalavr')
-    school = models.CharField('Школа', max_length=256, default='')
-    faculty = models.CharField('факультет', max_length=256, default='')
-    education_year = models.CharField('Год обучения', max_length=256, default='')
-    phone = models.CharField('мобильный телефон', max_length=256, validators=[phone_regex])
-    social_1 = models.URLField('ссылка на соц.сеть 1', default='')
-    social_2 = models.URLField('ссылка на соц.сеть 2', default='')
-    social_3 = models.URLField('ссылка на соц.сеть 3', default='')
+    name = models.CharField('Имя', max_length=256, default='', blank=True)
+    surname = models.CharField('Фамилия', max_length=256, default='', blank=True)
+    fathers_name = models.CharField('Отчество', max_length=256, default='', blank=True)
+    education_level = models.CharField('Уровень образования', max_length=256, blank=True)
+    school = models.CharField('Школа', max_length=256, default='', blank=True)
+    faculty = models.CharField('факультет', max_length=256, default='', blank=True)
+    education_year = models.CharField('Год обучения', max_length=256, default='', blank=True)
+    phone = models.CharField('мобильный телефон', max_length=256, validators=[phone_regex], blank=True)
+    social_1 = models.URLField('ссылка на соц.сеть 1', default='', blank=True)
+    social_2 = models.URLField('ссылка на соц.сеть 2', default='', blank=True)
+    social_3 = models.URLField('ссылка на соц.сеть 3', default='', blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -111,11 +111,13 @@ class Event(models.Model):
     date = models.DateField('Дата проведения')
     time = models.TimeField('Время проведения')
     auditorium = models.CharField('Место проведения/Аудитория', max_length=64)
-    organizators = models.ManyToManyField(User, verbose_name='Организаторы мероприятия', through='EventOrganizators')
+    organizators = models.ManyToManyField(User, verbose_name='Организаторы мероприятия', through='EventOrganizators',
+                                          blank=True
+    )
     date_end = models.DateField('Дата окончания')
     level = models.CharField('Уровень мероприятия', max_length=64, choices=LevelChoices.choices,
                              default=LevelChoices.UNIVERSITY)
-    guests = models.ManyToManyField(User, verbose_name='Участники мероприятия', related_name='guests')
+    guests = models.ManyToManyField(User, verbose_name='Участники мероприятия', related_name='guests', blank=True)
 
     class Meta:
         verbose_name = 'Мероприятие'
