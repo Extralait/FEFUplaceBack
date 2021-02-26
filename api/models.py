@@ -67,16 +67,16 @@ class User(AbstractUser):
 class Organization(models.Model):
     name = models.CharField('Название организации', max_length=64)
     image = models.ImageField('Аватар организации', blank=True)
-    description = models.TextField('Описание', default='')
-    mission = models.TextField('Миссия', default='')
-    motivation = models.TextField('Мотивировка', default='')
-    work_trajectory = models.TextField('Траектория работы', default='')
-    goal = models.TextField('Цель', default='')
-    members = models.ManyToManyField(User, verbose_name='участники организации', through='MembersInOrganization')
+    description = models.TextField('Описание', default='', blank=True)
+    mission = models.TextField('Миссия', default='', blank=True)
+    motivation = models.TextField('Мотивировка', default='', blank=True)
+    work_trajectory = models.TextField('Траектория работы', default='', blank=True)
+    goal = models.TextField('Цель', default='', blank=True)
+    members = models.ManyToManyField(User, verbose_name='участники организации', through='MembersInOrganization', blank=True)
     social_network_1 = models.URLField('ссылка на соцсеть 1', blank=True)
     social_network_2 = models.URLField('ссылка на соцсеть 2', blank=True)
-    phone = models.CharField(max_length=256, validators=[phone_regex])
-    email = models.EmailField('email')
+    phone = models.CharField(max_length=256, validators=[phone_regex], blank=True)
+    email = models.EmailField('email', blank=True)
 
     class Meta:
         verbose_name = 'Организация'

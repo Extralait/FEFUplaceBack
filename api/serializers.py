@@ -28,16 +28,16 @@ class EventOrganizatorsSerializer(serializers.ModelSerializer):
     grant = serializers.IntegerField(read_only=True)
 
     role_multipliers = {
-        'leader': '2.0',
-        'manager': '1.5',
-        'executor': '1.25',
-        'volonteer': '1.0',
+        'leader': '10.0',
+        'manager': '6.0',
+        'executor': '4.0',
+        'volonteer': '2.0',
     }
     level_multipliers = {
-        'international': '2.0',
-        'country': '1.5',
-        'regional': '1.25',
-        'university': '1.0',
+        'international': '1.2',
+        'country': '1.2',
+        'regional': '1.2',
+        'university': '1.8',
     }
 
     class Meta:
